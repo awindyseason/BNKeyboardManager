@@ -15,7 +15,7 @@
 		049FCC7626B2993700804A82 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 049FCC7426B2993700804A82 /* LaunchScreen.storyboard */; };
 		049FCC7926B2993700804A82 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 049FCC7826B2993700804A82 /* main.m */; };
 		049FCC8126B2994800804A82 /* BNKeyboardManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 049FCC7F26B2994800804A82 /* BNKeyboardManager.m */; };
-		049FCC8426B2997F00804A82 /* UIView+Addtion.m in Sources */ = {isa = PBXBuildFile; fileRef = 049FCC8326B2997F00804A82 /* UIView+Addtion.m */; };
+		04AA43C728A748D6003068EF /* UIView+Addtion.m in Sources */ = {isa = PBXBuildFile; fileRef = 04AA43C628A748D6003068EF /* UIView+Addtion.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,8 +33,8 @@
 		049FCC7826B2993700804A82 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		049FCC7F26B2994800804A82 /* BNKeyboardManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BNKeyboardManager.m; sourceTree = "<group>"; };
 		049FCC8026B2994800804A82 /* BNKeyboardManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BNKeyboardManager.h; sourceTree = "<group>"; };
-		049FCC8226B2997F00804A82 /* UIView+Addtion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Addtion.h"; sourceTree = "<group>"; };
-		049FCC8326B2997F00804A82 /* UIView+Addtion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Addtion.m"; sourceTree = "<group>"; };
+		04AA43C528A748D6003068EF /* UIView+Addtion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Addtion.h"; sourceTree = "<group>"; };
+		04AA43C628A748D6003068EF /* UIView+Addtion.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Addtion.m"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,8 +73,8 @@
 				049FCC6A26B2993600804A82 /* SceneDelegate.m */,
 				049FCC8026B2994800804A82 /* BNKeyboardManager.h */,
 				049FCC7F26B2994800804A82 /* BNKeyboardManager.m */,
-				049FCC8226B2997F00804A82 /* UIView+Addtion.h */,
-				049FCC8326B2997F00804A82 /* UIView+Addtion.m */,
+				04AA43C528A748D6003068EF /* UIView+Addtion.h */,
+				04AA43C628A748D6003068EF /* UIView+Addtion.m */,
 				049FCC6C26B2993600804A82 /* ViewController.h */,
 				049FCC6D26B2993600804A82 /* ViewController.m */,
 				049FCC6F26B2993600804A82 /* Main.storyboard */,
@@ -155,7 +155,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				049FCC8426B2997F00804A82 /* UIView+Addtion.m in Sources */,
+				04AA43C728A748D6003068EF /* UIView+Addtion.m in Sources */,
 				049FCC8126B2994800804A82 /* BNKeyboardManager.m in Sources */,
 				049FCC6E26B2993600804A82 /* ViewController.m in Sources */,
 				049FCC6826B2993600804A82 /* AppDelegate.m in Sources */,

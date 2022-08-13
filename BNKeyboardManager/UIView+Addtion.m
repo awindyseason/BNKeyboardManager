@@ -1,6 +1,6 @@
 //
 //  UIView+Addtion.m
-//  Hypermarket
+//  BNKeyboardManager
 //
 //  Created by iosKF on 2020/6/8.
 //  Copyright © 2020 Tikbee. All rights reserved.
@@ -96,12 +96,24 @@
 - (void)setOriginRect:(CGRect)originRect{
     
 }
-
-- (CGRect)windowRect{
-    return [self.superview convertRect:self.frame toView:UIApplication.sharedApplication.keyWindow];
+- (CGFloat)maxX{
+    return CGRectGetMaxX(self.frame);
 }
+- (CGFloat)maxY{
+    return CGRectGetMaxY(self.frame);
+}
+- (CGRect)windowRect{
+    return [self bnRectToView: UIApplication.sharedApplication.keyWindow];
+}
+- (CGRect)bnRectToView:(UIView *)superview{
+    return [self.superview convertRect:self.frame toView:superview];
+}
+
 + (NSString *)desc{
     return NSStringFromClass(self.class);
 //    return self.description;
+}
++ (instancetype)BNLoadNib{
+    return [[NSBundle mainBundle] loadNibNamed:NSStringFromClass(self.class) owner:nil options:nil][0];
 }
 @end

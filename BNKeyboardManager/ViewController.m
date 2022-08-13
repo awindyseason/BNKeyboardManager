@@ -35,19 +35,19 @@
 }
 
 - (IBAction)test2:(id)sender {
-    // 测试caculateView
-    BNKeyboardManager.shared.caculateView = self.textFieldBGView;
+
+    BNKeyboardManager.shared.caculcationView = self.textFieldBGView;
     
     [self.textView becomeFirstResponder];
     
 }
 - (IBAction)test3:(id)sender {
-    if (BNKeyboardManager.shared.isFirstResponder) {
-        [BNKeyboardManager.shared endEditing];
-        return;
-    }
+//    if (BNKeyboardManager.shared.isFirstResponder) {
+//        [BNKeyboardManager.shared endEditing];
+//        return;
+//    }
     // 测试moveView
-    BNKeyboardManager.shared.caculateView = _moveView;
+    BNKeyboardManager.shared.caculcationView = _moveView;
     BNKeyboardManager.shared.moveView = _moveView;
     [self.textField becomeFirstResponder];
 }
