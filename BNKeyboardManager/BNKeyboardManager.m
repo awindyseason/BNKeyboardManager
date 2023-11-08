@@ -1,6 +1,6 @@
 //
 //  BNKeyboardManager.m
-//  BNKeyboardManager
+//  TikBeeStore
 //
 //  Created by yh on 2020/7/17.
 //  Copyright © 2020 TikBee. All rights reserved.
@@ -16,9 +16,10 @@
 @property (nonatomic) CGRect beginKeyboardRect;
 @property (nonatomic) CGFloat time;
 
-
+@property (nonatomic) BOOL hasKeyboradInit;
 @property (nonatomic) UIView *toolBar;
-//@property (nonatomic) UIView *tapView;
+
+@property (nonatomic) BOOL trans;
 @end
 
 static BNKeyboardManager *shared = nil;
@@ -41,11 +42,11 @@ static BNKeyboardManager *shared = nil;
         _pan = [[UIPanGestureRecognizer alloc]initWithTarget:self action:@selector(pan:)];
         _pan.delegate = self;
         // 優先響應pan 取消其他touch
-//        _pan.cancelsTouchesInView = false;
+        //        _pan.cancelsTouchesInView = false;
         _pan.delaysTouchesBegan = true;
         _tap = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(tap:)];
         _tap.cancelsTouchesInView = false;
-    
+        _trans =true;
         _tapClose = true;
         [self toolBar];
         [self addKeyboardObserver];
@@ -58,31 +59,60 @@ static BNKeyboardManager *shared = nil;
     self.enable = true;
 }
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer{
-//    NSLog(@"手勢");
+        NSLog(@"手勢ges=%@ \n other = %@",gestureRecognizer,otherGestureRecognizer);
+    UIViewController *vc = [BNKeyboardManager currentController:self.responderView] ;
+    if([vc isKindOfClass:UIViewController.class]){
+        if([otherGestureRecognizer isEqual:vc.navigationController.interactivePopGestureRecognizer]){
+            [self.responderView endEditing:true];
+        }
+        
+    }
     return true;
 }
-- (void)tap:(UITapGestureRecognizer  *)tap{
-
-    [tap.view removeGestureRecognizer:tap];
-    [_responderView endEditing:true];
-
++ (UIViewController *)currentController:(UIView *)view
+{
+    //获取当前view的superView对应的控制器
+    UIResponder *next = [view nextResponder];
+    do {
+        if ([next isKindOfClass:[UIViewController class]]) {
+            return (UIViewController *)next;
+        }
+        next = [next nextResponder];
+    } while (next != nil);
+    return nil;
     
 }
+- (void)tap:(UITapGestureRecognizer  *)tap{
+ 
+    [tap.view removeGestureRecognizer:tap];
+    [_responderView endEditing:true];
+    
+    
+}
+- (void)setEnable:(BOOL)enable{
+    _enable = enable;
+    if (!enable) {
+        if (_toolBar) {
+            [_toolBar removeFromSuperview];
+        }
+    }
+}
 - (void)pan:(UIPanGestureRecognizer  *)pan{
-
+    
     [_pan.view removeGestureRecognizer:_pan];
     [_responderView endEditing:true];
-
+    
     
 }
 - (void)addKeyboardObserver{
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardChangeFrame:) name:UIKeyboardWillShowNotification object:nil];
-
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardDidHideNotification object:nil];
-
-
+//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardDidShowNotification object:nil];
+    
+    
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(textFieldViewDidBeginEditing:) name:UITextFieldTextDidBeginEditingNotification object:nil];
     
@@ -91,34 +121,49 @@ static BNKeyboardManager *shared = nil;
 }
 
 
--(void)textFieldViewDidBeginEditing:(NSNotification*)notification
+- (void)textFieldViewDidBeginEditing:(NSNotification*)notification
 {
     if (self.enable == false) {
         return;
     }
     UIView *view = notification.object;
+    //    if(_responderView && ![_responderView isEqual:view]){
+    //        [self transform];
+    //        return;
+    //    }
+    
+    //    [self recover];
     if (view) {
+        
+//        if(_responderView && ![_responderView isEqual:view]){
+//            [self recover];
+//
+//        }
         _responderView = view;
+        //        if(b){
+        //            [self transform];
+        //        }
     }
     if (_tapClose) {
-
-//        [_tapView removeFromSuperview];
-//        _tapView = [[UIView alloc]init];
-////        _tapView.userInteractionEnabled = false;
-//        // tap失效问题  需- 1
-//        _tapView.frame = CGRectMake(40, 0, SCREEN_WIDTH-40, SCREEN_HEIGHT-1);
+        
+        //        [_tapView removeFromSuperview];
+        //        _tapView = [[UIView alloc]init];
+        ////        _tapView.userInteractionEnabled = false;
+        //        // tap失效问题  需- 1
+        //        _tapView.frame = CGRectMake(40, 0, SCREEN_WIDTH-40, SCREEN_HEIGHT-1);
         //    _tapView.frame = self.bounds;
         [_responderView.window addGestureRecognizer:_pan];
         [_responderView.window addGestureRecognizer:_tap];
-//        [_responderView.superview.superview.superview insertSubview:_tapView atIndex:0];
-//        _tap.delegate = _tapView;
-//        [_tapView addGestureRecognizer:_tap];
-//        [_responderView.window addGestureRecognizer:_tap];
+        //        [_responderView.superview.superview.superview insertSubview:_tapView atIndex:0];
+        //        _tap.delegate = _tapView;
+        //        [_tapView addGestureRecognizer:_tap];
+        //        [_responderView.window addGestureRecognizer:_tap];
+        
     }
-    if ([view isKindOfClass:UITextView.class]) {
-        [self transform];
-    }
-    NSLog(@"1");
+//    if ([view isKindOfClass:UITextView.class]) {
+//        [self transform:false];
+//    }
+    NSLog(@"DidBeginEditing");
 }
 
 //- (void)keyboardWillShow:(NSNotification *)nf{
@@ -126,26 +171,40 @@ static BNKeyboardManager *shared = nil;
 //}
 
 - (void)keyboardChangeFrame:(NSNotification *)nf{
-    NSLog(@"3");
+    
+    NSLog(@"keyboardChangeFrame");
     if (self.enable == false) {
         return;
     }
-//    NSLog(@"%@--%f",NSStringFromCGRect(_keyboardRect),value);
-//    UIWindow *window = UIApplication.sharedApplication.keyWindow;
-
+    
+    //  UIWindow *window = UIApplication.sharedApplication.keyWindow;
+    self.hasKeyboradInit = true;
+    CGRect r = _keyboardRect;
     _keyboardRect = [nf.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
     _beginKeyboardRect = [nf.userInfo[UIKeyboardFrameBeginUserInfoKey] CGRectValue];
-//    _time = [nf.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
+    float t = [nf.userInfo[UIKeyboardAnimationDurationUserInfoKey] floatValue];
     _time = 0.25;
-//    if(![self.responderView isKindOfClass:UITextView.class]){
-        [self transform];
-//    }
+    //    if(![self.responderView isKindOfClass:UITextView.class]){
+    if(t > 0 || r.size.height != _keyboardRect.size.height){
+        
+        [self transform:true];
+    }
 }
-- (void)transform{
+
+- (void)transform:(BOOL)changeKeyboard{
+    
+    if (self.enable == false) {
+        return;
+    }
     if (!self.responderView.superview) {
         return;
     }
-    UIWindow *window = UIApplication.sharedApplication.keyWindow;
+  
+    UIView *window = [[BNKeyboardManager currentController:self.responderView] view];
+//    UIView *window = nil;
+    if(!window){
+        window = UIApplication.sharedApplication.keyWindow;
+    }
     if (!window) {
         return;
     }
@@ -153,38 +212,62 @@ static BNKeyboardManager *shared = nil;
     CGRect rect;
     UIView *view;
     [self.responderView layoutIfNeeded];
-    if (_moveView) {
-        view =  _moveView ;
-    }else{
+    
+    if (!_moveView) {
+      
+        _moveView =  window;
         
-        view =  window;
-        _moveView = view;
     }
-  
-//    view.transform = CGAffineTransformIdentity;
-    if (_caculcationView) {
-        rect = [_caculcationView.superview convertRect:_caculcationView.originRect toView:window];
+    view =  _moveView ;
+    //    view.transform = CGAffineTransformIdentity;
+    float y = view.transform.ty;
+    BOOL addToolTransY = [view isEqual:window];
+    if(changeKeyboard){
+        y = 0;
     }else{
-     
-        rect = [self.responderView.superview convertRect:self.responderView.originRect toView:window];
-    }
 
+    }
+    
+    if (_caculcationView) {
+        CGRect r = _caculcationView.originRect;
+        r.origin.y += y;
+        rect = [_caculcationView.superview convertRect:r toView:window];
+    }else{
+        CGRect r = self.responderView.originRect;
+        r.origin.y += y;
+        rect = [self.responderView.superview convertRect:r toView:window];
+    }
+    
     if (rect.size.height == 0) {
         return;
     }
     float toolHeight = self.isToolBar?40:0;
-    BOOL addToolTransY = [view isEqual:window];
+
     if (toolHeight > 0) {
         [window addSubview:self.toolBar];
-//        self.toolBar.frame = CGRectMake(self.beginKeyboardRect.origin.x,SCREEN_HEIGHT - self.beginKeyboardRect.size.height - toolHeight , SCREEN_WIDTH, toolHeight);
-        
     }
-   
     
-    if (CGRectGetMaxY(rect) > self.keyboardRect.origin.y - toolHeight) {
-        float transformY =  self.keyboardRect.origin.y -  CGRectGetMaxY(rect) - toolHeight - [self getDefaultMargin];
+    if(!self.hasKeyboradInit){
+        return;
+    }
+    //    float b = CGRectGetMaxY(rect) - self.keyboardRect.origin.y + toolHeight;
+    //    NSLog(@"b = %f ,ty = %f",b,y);
+    NSLog(@"鍵盤 = %@",NSStringFromCGRect(self.keyboardRect));
+    NSLog(@"tf位置 = %@",NSStringFromCGRect(rect));
+    NSLog(@"y = %f",view.transform.ty);
+    if(changeKeyboard){
+        y = view.transform.ty;
+    }
+    if (CGRectGetMaxY(rect) - y > self.keyboardRect.origin.y - toolHeight) {
+        
+        float transformY =  self.keyboardRect.origin.y -  CGRectGetMaxY(rect) - toolHeight - [self getDefaultMargin]  ;
+        if(changeKeyboard){
+            transformY += view.transform.ty;
+        }
+        
         [UIView animateWithDuration:self.time delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             view.transform = CGAffineTransformMakeTranslation(0, transformY);
+//            view.y = transformY;
             if (toolHeight > 0) {
                 
                 if (addToolTransY) {
@@ -195,48 +278,71 @@ static BNKeyboardManager *shared = nil;
                 }
             }
         } completion:^(BOOL finished) {
-
+            
         }];
+        
+        
     }else{
         CGRect r = CGRectMake(0,SCREEN_HEIGHT - self.keyboardRect.size.height - toolHeight , SCREEN_WIDTH, toolHeight);;
-//        NSLog(@"%@\n%@",NSStringFromCGRect(self.keyboardRect),NSStringFromCGRect(self.toolBar.frame));
+        
         if (!CGRectEqualToRect(self.toolBar.frame, r)) {
             [UIView animateWithDuration:self.time delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-                
+                view.transform = CGAffineTransformMakeTranslation(0, 0);;
+                window.transform = CGAffineTransformMakeTranslation(0, 0);;
                 self.toolBar.frame = r;
             } completion:^(BOOL finished) {
             }];
         }
     }
-//
-//    NSLog(@"aaa=== %@",NSStringFromCGRect(rect));
-//    NSLog(@"bbbbb=== %@",NSStringFromCGRect(self.responderView.layer.presentationLayer.frame));
+    //
+    //    NSLog(@"aaa=== %@",NSStringFromCGRect(rect));
+    //    NSLog(@"bbbbb=== %@",NSStringFromCGRect(self.responderView.layer.presentationLayer.frame));
     
 }
-
+- (void)keyboardDidShow:(NSNotification *)tf{
+    NSLog(@"keyboardDidShow");
+ 
+}
 - (void)keyboardDidHide:(NSNotification *)tf{
     _toolBar.frame = CGRectMake(0,SCREEN_HEIGHT, SCREEN_WIDTH, 40);
+    
+    NSLog(@"keyboardDidHide");
+    NSLog(@"%@",_moveView);
+  
 }
 
 - (void)keyboardWillHide:(NSNotification *)tf{
     if (self.enable == false) {
         return;
     }
-//    NSLog(@"end");
-//    [_moveView.layer removeAllAnimations];
-    _moveView.transform = CGAffineTransformIdentity;
-    [_tap.view removeGestureRecognizer:_tap];
-    [_pan.view removeGestureRecognizer:_pan];
-    _responderView = nil;
-    _moveView = nil;
-    _caculcationView = nil;
-    _isToolBar = false;
-    _tapClose = true;
+    NSLog(@"keyboardWillHide");
+    
+    [self recover];
+}
+- (void)recover{
+  
+    
+        _moveView.transform = CGAffineTransformIdentity;
+        [_tap.view removeGestureRecognizer:_tap];
+        [_pan.view removeGestureRecognizer:_pan];
+        
+        _responderView = nil;
+        _moveView = nil;
+        _caculcationView = nil;
+        _isToolBar = false;
+        _tapClose = true;
+        //    if (_toolBar) {
+        //        [_toolBar removeFromSuperview];
+        //    }
+        self.defaultMargin = 0;
+   
+    
     if (_toolBar) {
         [_toolBar removeFromSuperview];
     }
-    self.defaultMargin = 0;
 }
+
+
 - (float)getDefaultMargin{
     return self.defaultMargin?:k_defaultMargin;
 }
@@ -246,6 +352,7 @@ static BNKeyboardManager *shared = nil;
 }
 - (void)click_tool:(UIButton *)btn{
     [self.responderView endEditing:true];
+
 }
 - (void)endEditing{
     [self.responderView endEditing:true];
@@ -264,13 +371,13 @@ static BNKeyboardManager *shared = nil;
         UIView *line = [[UIView alloc]init];
         [_toolBar addSubview:line];
         line.frame = CGRectMake(0, 0, SCREEN_WIDTH, 0.5);
-        line.backgroundColor = [UIColor.blackColor colorWithAlphaComponent:0.3];
+        line.backgroundColor = UIColor.lightGrayColor;
     }
     return _toolBar;
 }
 
 
-    
+
 @end
 
 

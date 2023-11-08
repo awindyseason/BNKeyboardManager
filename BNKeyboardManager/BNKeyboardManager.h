@@ -1,6 +1,6 @@
 //
 //  BNKeyboardManager.h
-//  BNKeyboardManager
+//  TikBeeStore
 //
 //  Created by yh on 2020/7/17.
 //  Copyright © 2020 TikBee. All rights reserved.
